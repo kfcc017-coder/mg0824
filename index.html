@@ -39,14 +39,14 @@
 <!-- Application Structure Plan: 
 1. Executive Summary Header & Key Metrics: Quick top-level KPIs for executive review.
 2. Tabbed Navigation: Allows switching between Executive Summary, Interactive Loan Simulator, ACSS & Risk Management, and Strategic Impact & Roadmap.
-3. Interactive Rate & Savings Simulator: Allows users to toggle market location, transaction criteria, and municipality subsidies to dynamically observe interest rates and interest savings.
+3. Interactive Rate & Savings Simulator: Allows users to toggle market location, transaction criteria, and municipality subsidies to dynamically observe interest rates and interest savings. Added direct call-to-action button to external Financial Calculator (mg_cal2).
 4. ACSS Comparison & Risk Architecture: Interactive view comparing traditional scoring vs. ACSS non-financial scoring with radar/doughnut visual.
 5. Interactive Roadmap & Projection: Multi-phase timeline navigation coupled with 3-year projected portfolio growth charts.
-Why this structure: Executive users require both top-level metrics and interactive proof-of-concept tools (like the rate simulator) to validate business viability and social impact.
 -->
 <!-- Visualization & Content Choices:
 - KPI Summary Badges: Metric Cards -> Quick executive scan -> Plain HTML/Tailwind -> Pure static text/badges.
 - Rate Breakdown: Stacked Bar Chart -> Display discount component breakdown -> Chart.js horizontal bar chart.
+- External Calculator Link: Styled Anchor Button with target="_blank" -> Quick access to detailed calculator -> Added in Header and Simulator Section.
 - ACSS Weight Model: Doughnut Chart -> Show evaluation factors (Card sales, repeat customer rate) -> Chart.js Doughnut.
 - Financial Growth Projection: Bar & Line Chart -> Multi-year portfolio & merchant growth -> Chart.js Combined Chart.
 - Interactive Step Navigator: HTML/JS Event listeners -> Interactive timeline display.
@@ -64,8 +64,15 @@ Why this structure: Executive users require both top-level metrics and interacti
                     <span class="text-lg font-bold text-slate-700">상생 희망드림 대출</span>
                     <span class="hidden sm:inline-block bg-sky-100 text-sky-800 text-xs px-2.5 py-0.5 rounded-full font-medium">모바일 특화 상품 기획서</span>
                 </div>
-                <div class="text-xs text-slate-500 font-medium">
-                    2026 포용금융 리더십 프로젝트
+                <div class="flex items-center space-x-3">
+                    <!-- Added Financial Calculator External Link Button -->
+                    <a href="https://kfcc017-coder.github.io/mg0824/mg_cal2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm">
+                        <span>🧮 정밀 금융계산기</span>
+                        <span class="text-xs">↗</span>
+                    </a>
+                    <span class="hidden md:inline-block text-xs text-slate-500 font-medium">
+                        2026 포용금융 리더십 프로젝트
+                    </span>
                 </div>
             </div>
             <!-- Dynamic Navigation Tabs -->
@@ -114,7 +121,7 @@ Why this structure: Executive users require both top-level metrics and interacti
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-amber-300 transition">
                     <div class="text-xs font-semibold text-slate-400 uppercase">신청~실행 소요시간</div>
-                    <div class="text-3xl font-extrabold text-amber-600 mt-2">15 분 내</div>
+                    <div class="text-3xl font-extrabold text-amber-600 mt-2">10 분 내</div>
                     <div class="text-xs text-slate-500 mt-1">Zero-Visit, 스크래핑 기반 무서류 완결</div>
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-teal-300 transition">
@@ -182,12 +189,19 @@ Why this structure: Executive users require both top-level metrics and interacti
         <!-- SECTION 2: PRODUCT DETAILS & SIMULATOR -->
         <section id="sec-product-details" class="space-y-8 hidden">
             <!-- Intro Paragraph -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h2 class="text-xl font-bold text-slate-900 mb-2">Ⅱ. 상품 세부 구조 및 우대금리 시뮬레이터</h2>
-                <p class="text-slate-600 text-sm leading-relaxed">
-                    본 섹션에서는 대출 상품의 한도, 금리, 조건 등 세부 명세를 확인하고, 고객 조건에 따른 우대금리 항목을 직접 조율해보는 대화형 시뮬레이터를 제공합니다. 
-                    우대 조건 설정에 따라 실제 대출 금리와 월 이자 절감액이 어떻게 변하는지 실시간으로 계산됩니다.
-                </p>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-2">Ⅱ. 상품 세부 구조 및 우대금리 시뮬레이터</h2>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        본 섹션에서는 대출 상품의 한도, 금리, 조건 등 세부 명세를 확인하고, 고객 조건에 따른 우대금리 항목을 직접 조율해보는 대화형 시뮬레이터를 제공합니다. 
+                        우대 조건 설정에 따라 실제 대출 금리와 월 이자 절감액이 어떻게 변하는지 실시간으로 계산됩니다.
+                    </p>
+                </div>
+                <!-- Banner Button for Financial Calculator -->
+                <a href="https://kfcc017-coder.github.io/mg0824/mg_cal2" target="_blank" rel="noopener noreferrer" class="shrink-0 bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs px-4 py-3 rounded-xl transition shadow-md flex items-center space-x-2">
+                    <span>🧮 정밀 금융계산기 바로가기</span>
+                    <span class="text-sm">↗</span>
+                </a>
             </div>
 
             <!-- Interactive Simulator Grid -->
@@ -292,13 +306,28 @@ Why this structure: Executive users require both top-level metrics and interacti
                             <canvas id="rateBreakdownChart"></canvas>
                         </div>
                     </div>
+
+                    <!-- Direct Link Box to External Financial Calculator -->
+                    <div class="p-4 bg-sky-50 rounded-xl border border-sky-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div>
+                            <h5 class="text-xs font-bold text-sky-900">상세 원리금균등/원금균등 상환 스케줄을 확인하고 싶으신가요?</h5>
+                            <p class="text-xs text-sky-700 mt-0.5">대출 기간별, 상환 방식별 정밀 원리금 계산을 위해 전용 계산기를 이용할 수 있습니다.</p>
+                        </div>
+                        <a href="https://kfcc017-coder.github.io/mg0824/mg_cal2" target="_blank" rel="noopener noreferrer" class="whitespace-nowrap shrink-0 bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition shadow-sm flex items-center space-x-1.5">
+                            <span>🧮 정밀 금융계산기</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- Product Specs Table -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="p-5 border-b border-slate-100 bg-slate-50">
+                <div class="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="font-bold text-slate-900 text-base">📌 상품 세부 사양 종합 표 (Product Specifications)</h3>
+                    <a href="https://kfcc017-coder.github.io/mg0824/mg_cal2" target="_blank" rel="noopener noreferrer" class="text-xs text-sky-700 hover:text-sky-900 font-bold underline">
+                        원리금 상환계산기 열기 ↗
+                    </a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-slate-600">
@@ -503,8 +532,13 @@ Why this structure: Executive users require both top-level metrics and interacti
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
-            MG 상생 희망드림 대출 기획서 대화형 대시보드 | 본 화면은 임원 보고 및 실무 기획 검토용 인터랙티브 웹 앱입니다.
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-2">
+            <div>
+                MG 상생 희망드림 대출 기획서 대화형 대시보드 | 임원 보고 및 실무 기획 검토용
+            </div>
+            <a href="https://kfcc017-coder.github.io/mg0824/mg_cal2" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 font-bold">
+                🧮 정밀 금융계산기 외부 링크 ↗
+            </a>
         </div>
     </footer>
 
