@@ -89,6 +89,7 @@
                             <option value="수선유지비">수선유지비</option>
                             <option value="비품">비품</option>
                             <option value="개량공사">개량공사</option>
+                            <option value="급식비">급식비</option> <!-- 새로 추가된 항목 -->
                         </select>
                     </div>
                     <div>
@@ -165,6 +166,7 @@
                             <th class="border border-gray-200 px-4 py-2 text-blue-600">수선유지비</th>
                             <th class="border border-gray-200 px-4 py-2 text-green-600">비품</th>
                             <th class="border border-gray-200 px-4 py-2 text-purple-600">개량공사</th>
+                            <th class="border border-gray-200 px-4 py-2 text-orange-600">급식비</th> <!-- 새로 추가된 컬럼 -->
                             <th class="border border-gray-200 px-4 py-2 bg-gray-200">합계</th>
                         </tr>
                     </thead>
@@ -189,7 +191,7 @@
         // ==========================================
         // ⚠️ 주의: 아래 SCRIPT_URL을 본인의 앱스 스크립트 웹앱 URL로 변경해야 합니다!
         // ==========================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEkEbfxantxxcbjGpnRVuQ8SxLzNiV7c16kVMMDscdXg7W4GJczQ5lfhvMBFrfSkDO/exec'; 
+        const SCRIPT_URL ='https://script.google.com/macros/s/AKfycbxEkEbfxantxxcbjGpnRVuQ8SxLzNiV7c16kVMMDscdXg7W4GJczQ5lfhvMBFrfSkDO/exec'; 
         
         // State Management
         let budgetData = []; // 초기값은 빈 배열, DB에서 로드
@@ -292,7 +294,7 @@
             showLoading('데이터를 저장하는 중입니다...');
             
             try {
-                // URLSearchParams를 사용하여 form 데이터 전송 (CORS 이슈 회피를 위해 POST 대신 GET 파라미터 또는 FormData 사용, 앱스 스크립트는 FormData를 POST로 받는 것이 안정적)
+                // URLSearchParams를 사용하여 form 데이터 전송
                 const formData = new FormData();
                 formData.append('action', 'insert');
                 formData.append('id', newEntry.id);
@@ -399,7 +401,9 @@
                     <td class="px-4 py-3 text-sm">
                         <span class="px-2 py-1 rounded-full text-xs font-medium 
                             ${item.category === '수선유지비' ? 'bg-blue-100 text-blue-800' : 
-                              item.category === '비품' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}">
+                              item.category === '비품' ? 'bg-green-100 text-green-800' : 
+                              item.category === '개량공사' ? 'bg-purple-100 text-purple-800' :
+                              'bg-orange-100 text-orange-800'}"> <!-- 급식비(나머지) 주황색 적용 -->
                             ${item.category}
                         </span>
                     </td>
@@ -450,7 +454,8 @@
                     labels: Object.keys(catMap),
                     datasets: [{
                         data: Object.values(catMap),
-                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'],
+                        // 기존 3개 색상 + 오렌지색(급식비) 추가
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f97316'],
                         borderWidth: 0
                     }]
                 },
@@ -484,10 +489,10 @@
             const tableBody = document.getElementById('summaryTableBody');
             const monthlyData = {};
 
-            // Grouping data by month and category
+            // Grouping data by month and category (급식비 속성 추가)
             budgetData.forEach(item => {
                 if(!monthlyData[item.month]) {
-                    monthlyData[item.month] = { '수선유지비': 0, '비품': 0, '개량공사': 0, total: 0 };
+                    monthlyData[item.month] = { '수선유지비': 0, '비품': 0, '개량공사': 0, '급식비': 0, total: 0 };
                 }
                 monthlyData[item.month][item.category] += item.amount;
                 monthlyData[item.month].total += item.amount;
@@ -504,25 +509,15 @@
                         <td class="border border-gray-200 px-4 py-2">${row['수선유지비'].toLocaleString()}</td>
                         <td class="border border-gray-200 px-4 py-2">${row['비품'].toLocaleString()}</td>
                         <td class="border border-gray-200 px-4 py-2">${row['개량공사'].toLocaleString()}</td>
+                        <td class="border border-gray-200 px-4 py-2 text-orange-600 font-medium">${row['급식비'].toLocaleString()}</td> <!-- 급식비 테이블 행 데이터 -->
                         <td class="border border-gray-200 px-4 py-2 bg-gray-50 font-bold">${row.total.toLocaleString()}</td>
                     </tr>
                 `;
             }).join('');
             
             if(sortedMonths.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-gray-400">데이터가 없습니다.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-gray-400">데이터가 없습니다.</td></tr>`;
             }
-        }
-
-        // Custom Alert Controls
-        function showAlert(title, msg) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMsg').innerText = msg;
-            document.getElementById('customAlert').classList.remove('hidden');
-        }
-
-        function closeAlert() {
-            document.getElementById('customAlert').classList.add('hidden');
         }
 
         // Initial Load
@@ -537,4 +532,4 @@
         }
     </script>
 </body>
-</html>```
+</html>
