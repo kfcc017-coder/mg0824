@@ -308,7 +308,8 @@
                 formData.append('action', 'insert');
                 formData.append('id', newEntry.id);
                 formData.append('member', newEntry.member);
-                formData.append('date', newEntry.date); // Apps Script에서 month를 받는 구조라면 시트 열 이름을 date로 수정해야 할 수 있습니다.
+                formData.append('date', newEntry.date); 
+                formData.append('month', newEntry.date); // 💡 구글 시트(Apps Script) 호환성을 위해 month 변수도 함께 전송
                 formData.append('category', newEntry.category);
                 formData.append('amount', newEntry.amount);
 
