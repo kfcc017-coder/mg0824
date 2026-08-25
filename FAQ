@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>업무 FAQ 검색</title>
+
+  <style>
+    :root {
+      --bg: #fff8fb;
+      --surface: #ffffff;
+      --surface-soft: #fff3f8;
+      --text: #352f3b;
+      --muted: #817989;
+      --border: #eadde5;
+      --primary: #e86b9a;
+      --primary-dark: #cd4f80;
+      --primary-soft: #ffe7f0;
+      --highlight: #fff0a8;
+      --shadow: 0 12px 30px rgba(113, 72, 91, 0.10);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        "Arial Rounded MT Bold",
+        "Segoe UI Rounded",
+        "NanumSquareRound",
+        "Noto Sans KR",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(circle at top left, #fff0f6 0, transparent 32%),
+        radial-gradient(circle at bottom right, #f4edff 0, transparent 28%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app {
+      width: min(940px, calc(100% - 32px));
+      margin: 54px auto;
+    }
+
+    .header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .title-badge {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 5vw, 42px);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .search-panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 0;
+      height: 50px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 0 16px;
+      background: #fff;
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: 0.18s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(232, 107, 154, 0.14);
+    }
+
+    .view-all-btn {
+      height: 50px;
+      border: none;
+      border-radius: 15px;
+      padding: 0 19px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(232, 107, 154, 0.22);
+      transition: 0.18s ease;
+    }
+
+    .view-all-btn:hover {
+      transform: translateY(-1px);
+      background: var(--primary-dark);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 17px;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: white;
+      color: #6f6674;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-1px);
+      border-color: #e5b9ca;
+    }
+
+    .filter-btn.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 25px 3px 13px;
+    }
+
+    .results-title {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .result-count {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .result-list {
+      display: grid;
+      gap: 13px;
+    }
+
+    .faq-card {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 21px;
+      box-shadow: 0 6px 18px rgba(113, 72, 91, 0.05);
+      transition: 0.18s ease;
+    }
+
+    .faq-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(113, 72, 91, 0.09);
+    }
+
+    .faq-card::after {
+      content: "";
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      right: -28px;
+      top: -28px;
+      border-radius: 50%;
+      background: var(--surface-soft);
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 10px;
+      margin-bottom: 11px;
+      background: #f7f2f6;
+      color: #716873;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .question {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.55;
+      letter-spacing: -0.025em;
+    }
+
+    .answer {
+      margin: 0;
+      color: #655e69;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    mark {
+      background: var(--highlight);
+      color: inherit;
+      border-radius: 4px;
+      padding: 0 2px;
+    }
+
+    .empty-state {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px dashed #dfcbd6;
+      border-radius: 18px;
+      padding: 50px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--text);
+      font-size: 17px;
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        margin: 32px auto;
+      }
+
+      .search-row {
+        flex-direction: column;
+      }
+
+      .view-all-btn {
+        width: 100%;
+      }
+
+      .results-header {
+        align-items: flex-end;
+      }
+
+      .faq-card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="title-badge">사내 업무 도우미</div>
+      <h1>업무 FAQ 검색</h1>
+      <p class="subtitle">
+        질문이나 키워드를 입력해서 필요한 FAQ를 빠르게 찾아보세요.
+      </p>
+    </header>
+
+    <section class="search-panel" aria-label="FAQ 검색 및 필터">
+      <div class="search-row">
+        <input
+          id="searchInput"
+          class="search-input"
+          type="search"
+          placeholder="질문이나 키워드를 입력하세요."
+          aria-label="FAQ 검색어"
+          autocomplete="off"
+        />
+        <button id="viewAllBtn" class="view-all-btn" type="button">
+          전체보기
+        </button>
+      </div>
+
+      <div id="filters" class="filters" aria-label="분류 선택"></div>
+    </section>
+
+    <section aria-live="polite">
+      <div class="results-header">
+        <h2 class="results-title">검색 결과</h2>
+        <span id="resultCount" class="result-count"></span>
+      </div>
+      <div id="resultList" class="result-list"></div>
+    </section>
+  </main>
+
+  <script>
+    const faqData = [
+  {
+    "category": "교육",
+    "question": "교육 신청은 어디에서 하나요?",
+    "answer_seed": "교육 포털의 과정 검색 후 신청 메뉴를 사용합니다."
+  },
+  {
+    "category": "교육",
+    "question": "신청한 교육을 취소하려면 어떻게 하나요?",
+    "answer_seed": "신청내역에서 취소 가능 여부를 확인합니다."
+  },
+  {
+    "category": "문서",
+    "question": "주간 업무보고에는 무엇을 넣어야 하나요?",
+    "answer_seed": "주요 실적, 이슈, 다음 주 계획을 중심으로 작성합니다."
+  },
+  {
+    "category": "IT",
+    "question": "사내 시스템 접속이 되지 않습니다.",
+    "answer_seed": "네트워크, 브라우저, 계정 상태를 순서대로 확인합니다."
+  },
+  {
+    "category": "보안",
+    "question": "ChatGPT에 내부 업무자료를 넣어도 되나요?",
+    "answer_seed": "교육에서는 합성자료를 사용하고, 실제 자료는 조직의 보안 및 AI 사용 기준을 먼저 확인합니다."
+  },
+  {
+    "category": "교육",
+    "question": "교육장소는 어디인가요?",
+    "answer_seed": "신논현역과 논현역 사이입니다."
+  },
+  {
+    "category": "개인",
+    "question": "점심메뉴는 무엇인가요?",
+    "answer_seed": "한식 양식 일실중 선택할수있습니다."
+  }
+];
+
+    const searchInput = document.getElementById("searchInput");
+    const viewAllBtn = document.getElementById("viewAllBtn");
+    const filters = document.getElementById("filters");
+    const resultList = document.getElementById("resultList");
+    const resultCount = document.getElementById("resultCount");
+
+    let selectedCategory = "전체";
+
+    const categories = [
+      "전체",
+      ...new Set(faqData.map(item => item.category))
+    ];
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#039;",
+        '"': "&quot;"
+      })[char]);
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function highlight(text, keyword) {
+      const safeText = escapeHtml(text);
+      const trimmed = keyword.trim();
+
+      if (!trimmed) return safeText;
+
+      const pattern = new RegExp(
+        `(${escapeRegExp(trimmed)})`,
+        "gi"
+      );
+
+      return safeText.replace(pattern, "<mark>$1</mark>");
+    }
+
+    function renderFilters() {
+      filters.innerHTML = categories.map(category => `
+        <button
+          class="filter-btn ${category === selectedCategory ? "active" : ""}"
+          type="button"
+          data-category="${escapeHtml(category)}"
+        >
+          ${escapeHtml(category)}
+        </button>
+      `).join("");
+
+      filters.querySelectorAll(".filter-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          selectedCategory = button.dataset.category;
+          renderFilters();
+          renderFaqs();
+        });
+      });
+    }
+
+    function renderFaqs() {
+      const keyword = searchInput.value.trim();
+      const normalizedKeyword = keyword.toLocaleLowerCase("ko-KR");
+
+      const filtered = faqData.filter(item => {
+        const categoryMatch =
+          selectedCategory === "전체" ||
+          item.category === selectedCategory;
+
+        const searchableText =
+          `${item.question} ${item.answer_seed} ${item.category}`
+            .toLocaleLowerCase("ko-KR");
+
+        const keywordMatch =
+          !normalizedKeyword ||
+          searchableText.includes(normalizedKeyword);
+
+        return categoryMatch && keywordMatch;
+      });
+
+      resultCount.textContent = `총 ${filtered.length}건`;
+
+      if (filtered.length === 0) {
+        resultList.innerHTML = `
+          <div class="empty-state">
+            <strong>검색 결과가 없습니다.</strong>
+            FAQ에 등록된 다른 키워드나 분류로 검색해 주세요.
+          </div>
+        `;
+        return;
+      }
+
+      resultList.innerHTML = filtered.map(item => `
+        <article class="faq-card">
+          <span class="category-badge">
+            ${highlight(item.category, keyword)}
+          </span>
+
+          <h3 class="question">
+            ${highlight(item.question, keyword)}
+          </h3>
+
+          <p class="answer">
+            ${highlight(item.answer_seed, keyword)}
+          </p>
+        </article>
+      `).join("");
+    }
+
+    searchInput.addEventListener("input", renderFaqs);
+
+    viewAllBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      selectedCategory = "전체";
+      renderFilters();
+      renderFaqs();
+      searchInput.focus();
+    });
+
+    renderFilters();
+    renderFaqs();
+  </script>
+</body>
+</html>
