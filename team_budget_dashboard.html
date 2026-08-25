@@ -236,13 +236,21 @@
                 
                 if (result.status === 'success') {
                     // 데이터 형식을 기존 앱에 맞게 변환
-                    budgetData = result.data.map(row => ({
-                        id: row.id || Date.now(), // id가 없으면 생성
-                        member: row.member,
-                        date: row.date || row.month, // 구버전 호환성을 위해 month 데이터도 확인
-                        category: row.category,
-                        amount: parseInt(row.amount)
-                    }));
+                    budgetData = result.data.map(row => {
+                        // 날짜 데이터가 길게 들어올 경우(예: 2026-08-25T15:00:00.000Z) 앞의 날짜 부분만 잘라냅니다.
+                        let dateValue = row.date || row.month || '';
+                        if (dateValue.includes('T')) {
+                            dateValue = dateValue.split('T')[0]; 
+                        }
+
+                        return {
+                            id: row.id || Date.now(), // id가 없으면 생성
+                            member: row.member,
+                            date: dateValue, // 깔끔하게 정제된 날짜 데이터 사용
+                            category: row.category,
+                            amount: parseInt(row.amount)
+                        };
+                    });
                     renderHistory();
                     if(document.getElementById('section-dashboard').classList.contains('hidden') === false) {
                         updateDashboard();
